@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#080C14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Plan FC">
+<link rel="manifest" href="manifest.json">
+<title>Plan FC</title>
+<style>
+:root{
+  --bg:#080C14;--card:#0F172A;--card2:#0A1020;--line:#1E293B;
+  --text:#F1F5F9;--muted:#94A3B8;--dim:#64748B;
+  --orange:#FB923C;--green:#4ADE80;--yellow:#FBBF24;--blue:#60A5FA;--red:#F87171;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  min-height:100vh;max-width:520px;margin:0 auto;
+  padding-bottom:calc(86px + env(safe-area-inset-bottom));
+}
+button{font:inherit}
+.header{
+  background:linear-gradient(135deg,#0F172A,#1A2535);
+  padding:calc(18px + env(safe-area-inset-top)) 18px 16px;
+  border-bottom:1px solid var(--line);
+}
+.header-sub{font-size:10px;letter-spacing:2px;color:#64748B;text-transform:uppercase;margin-bottom:5px}
+.header-title{font-size:21px;font-weight:800}
+.header-desc{font-size:11px;color:var(--dim);margin-top:3px}
+.tabs{
+  display:flex;gap:6px;padding:10px 12px;background:var(--bg);
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;
+}
+.tab,.week-btn,.toggle-btn{
+  border:1px solid var(--line);background:var(--card);color:var(--dim);
+  border-radius:9px;cursor:pointer;
+}
+.tab{flex:1;padding:9px 3px;font-size:11px}
+.tab.active,.week-btn.active{border-color:var(--orange);background:#FB923C18;color:var(--orange);font-weight:700}
+.section{padding:14px 14px 4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:12px}
+.card-orange{border-color:#FB923C44}.card-green{border-color:#4ADE8044}
+.card-yellow{border-color:#FBBF2444}.card-blue{border-color:#60A5FA44}
+.label{font-size:10px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:5px}
+.label-orange{color:var(--orange)}.label-green{color:var(--green)}
+.label-yellow{color:var(--yellow)}.label-blue{color:var(--blue)}
+.title{font-size:16px;font-weight:700;margin-bottom:4px}
+.desc{font-size:13px;color:var(--muted);line-height:1.65;margin-top:9px}
+.alert{padding:12px 13px;border-radius:9px;font-size:12px;line-height:1.55;margin-bottom:12px}
+.alert-blue{background:#00102A;border:1px solid #60A5FA44;color:#93C5FD}
+.alert-green{background:#001A0A;border:1px solid #4ADE8044;color:#86EFAC}
+.alert-orange{background:#1A0A00;border:1px solid #FB923C44;color:#FDBA74}
+.alert-yellow{background:#1A1500;border:1px solid #FBBF2444;color:#FDE68A}
+.row{display:flex;justify-content:space-between;align-items:center}
+.metrics{display:flex;gap:14px;margin-top:12px}
+.metric{text-align:center;min-width:54px}
+.metric-val{font-size:20px;font-weight:800}
+.green{color:var(--green)}.orange{color:var(--orange)}.yellow{color:var(--yellow)}
+.metric-label{font-size:10px;color:var(--dim);margin-top:2px}
+.day-item{
+  border-left:3px solid var(--line);padding:10px 12px;margin-bottom:8px;
+  border-radius:0 8px 8px 0;background:var(--card2)
+}
+.day-orange{border-left-color:var(--orange)}.day-green{border-left-color:var(--green)}
+.day-blue{border-left-color:var(--blue)}.day-gray{border-left-color:#475569}
+.day-name{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:3px}
+.day-session{font-size:14px;font-weight:650;margin-bottom:4px}
+.day-detail{font-size:11.5px;color:var(--dim);line-height:1.55}
+.week-selector{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
+.week-selector::-webkit-scrollbar{display:none}
+.week-btn{flex:0 0 auto;padding:8px 12px;font-size:11px;white-space:nowrap}
+.toggle-row{display:flex;gap:8px;margin-bottom:14px}
+.toggle-btn{flex:1;padding:9px;font-size:12px}
+.toggle-btn.active{border-color:var(--green);background:#4ADE8018;color:var(--green);font-weight:700}
+.food-item{background:#0A1628;border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:8px}
+.food-time{font-size:10px;color:var(--dim);margin-bottom:3px}
+.food-name{font-size:13px;font-weight:700;margin-bottom:5px}
+.food-items{padding-left:18px}.food-items li{font-size:12px;color:#CBD5E1;margin-bottom:3px;line-height:1.45}
+.food-note{font-size:10.5px;color:var(--yellow);background:#1A1500;padding:6px 8px;border-radius:6px;margin-top:8px;line-height:1.45}
+.food-macros{display:flex;gap:12px;margin-top:7px;font-size:10px;color:var(--dim)}
+.progress-bg{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:7px 0 4px}
+.progress{height:100%;border-radius:99px;background:var(--orange)}
+.hidden{display:none!important}
+.bottom-nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  max-width:520px;margin:auto;background:#0F172A;border-top:1px solid var(--line);
+  display:flex;padding:7px 0 calc(8px + env(safe-area-inset-bottom))
+}
+.nav-item{flex:1;text-align:center;padding:5px;cursor:pointer}
+.nav-icon{font-size:19px}.nav-label{font-size:9px;color:var(--dim);margin-top:2px}
+.nav-item.active .nav-label{color:var(--orange)}
+.small{font-size:11px;color:var(--dim);line-height:1.55}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:8px 5px;border-bottom:1px solid #182235}
+th{color:var(--dim);font-size:10px;text-align:center}
+th:first-child,td:first-child{text-align:left}
+td{color:#CBD5E1;text-align:center}
+@media (min-width:521px){
+  body{box-shadow:0 0 40px #0008}
+}
+</style>
+<meta name="color-scheme" content="dark">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-sub">Plan personal</div>
+  <div class="header-title">Plan FC</div>
+  <div class="header-desc">Agosto–septiembre 2026</div>
+</header>
+
+<nav class="tabs" aria-label="Secciones">
+  <button class="tab active" data-tab="hoy">📅 Hoy</button>
+  <button class="tab" data-tab="entreno">🚴 Entreno</button>
+  <button class="tab" data-tab="nutri">🍽️ Nutrición</button>
+  <button class="tab" data-tab="medidas">📏 Medidas</button>
+</nav>
+
+<main>
+<section id="tab-hoy" class="section">
+  <div class="alert alert-blue">📍 Semana de transición: Floridablanca → viaje a Bogotá → adaptación.</div>
+
+  <article class="card card-green">
+    <div class="label label-green">Domingo 16 ago · Floridablanca</div>
+    <div class="title">🏃 Run suave de recuperación</div>
+    <div class="desc">
+      45 min totales.<br>
+      • 10 min muy suaves<br>
+      • 25 min cómodos<br>
+      • 10 min caminando/enfriamiento<br><br>
+      La prioridad es terminar fresco, no perseguir ritmo.
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="metric-val green">45'</div><div class="metric-label">duración</div></div>
+      <div class="metric"><div class="metric-val green">suave</div><div class="metric-label">intensidad</div></div>
+    </div>
+  </article>
+
+  <article class="card card-orange">
+    <div class="label label-orange">Lunes 17 ago · mañana</div>
+    <div class="title">🏃 Run de calidad</div>
+    <div class="desc">
+      50 min totales.<br>
+      • 10 min calentamiento<br>
+      • 20 min técnica/cadencia cómoda<br>
+      • 3 × 2 min de esfuerzo controlado, con 90 s suaves<br>
+      • 10 min enfriamiento<br><br>
+      Si aparece dolor, mareo o fatiga inusual, reduce o suspende la sesión.
+    </div>
+  </article>
+
+  <article class="card card-yellow">
+    <div class="label label-yellow">Lunes noche · viaje</div>
+    <div class="title">🚌 Viaje Floridablanca → Bogotá</div>
+    <div class="desc">
+      Prioriza descanso, hidratación normal y movimiento durante las paradas.
+      No es necesario añadir una sesión de entrenamiento antes del viaje.
+    </div>
+  </article>
+
+  <article class="card card-blue">
+    <div class="label label-blue">Martes 18 ago · Bogotá</div>
+    <div class="title">🌅 Día de llegada</div>
+    <div class="desc">
+      No hay sesión obligatoria. Primero recupera sueño y energía.
+      Si te sientes recuperado, realiza únicamente una sesión fácil.
+    </div>
+  </article>
+</section>
+
+<section id="tab-entreno" class="section hidden">
+  <div class="week-selector">
+    <button class="week-btn active" data-week="0">S1 · 15–21 ago</button>
+    <button class="week-btn" data-week="1">S2 · 22–28 ago</button>
+    <button class="week-btn" data-week="2">S3 · 29 ago–4 sep</button>
+    <button class="week-btn" data-week="3">S4 · 5–11 sep</button>
+  </div>
+
+  <div id="week-0">
+    <div class="alert alert-orange">S1 — Base y adaptación. Prioridad: consistencia y técnica.</div>
+    <div class="day-item day-orange"><div class="day-name">LUN · Simulador</div><div class="day-session">Z2 base + cadencia</div><div class="day-detail">55 min · intensidad aeróbica cómoda · cadencia estable.</div></div>
+    <div class="day-item day-orange"><div class="day-name">MAR · Simulador</div><div class="day-session">Sweet spot 2 × 12 min</div><div class="day-detail">65 min · 2 bloques controlados · 4 min suaves entre bloques.</div></div>
+    <div class="day-item day-orange"><div class="day-name">MIÉ · Simulador</div><div class="day-session">Z2 + activaciones</div><div class="day-detail">50 min · base aeróbica + 4 activaciones breves sin llegar al máximo.</div></div>
+    <div class="day-item day-gray"><div class="day-name">JUE</div><div class="day-session">💤 Descanso</div><div class="day-detail">Movilidad opcional 15–20 min.</div></div>
+    <div class="day-item day-green"><div class="day-name">SÁB · Run</div><div class="day-session">Técnica + bloques cortos</div><div class="day-detail">45 min · calentamiento + técnica + 2 bloques cortos controlados + enfriamiento.</div></div>
+    <div class="day-item day-green"><div class="day-name">DOM · Run</div><div class="day-session">Rodaje fácil</div><div class="day-detail">60 min · conversación cómoda; no perseguir ritmo.</div></div>
+  </div>
+
+  <div id="week-1" class="hidden">
+    <div class="alert alert-orange">S2 — Progresión moderada. Mantén un día completo de recuperación.</div>
+    <div class="day-item day-orange"><div class="day-name">LUN · Simulador</div><div class="day-session">Sweet spot 3 × 12 min</div><div class="day-detail">75 min · 3 bloques controlados · 4 min suaves.</div></div>
+    <div class="day-item day-orange"><div class="day-name">MAR · Simulador</div><div class="day-session">6 × 3 min</div><div class="day-detail">65 min · esfuerzo fuerte pero controlado · 3 min de recuperación.</div></div>
+    <div class="day-item day-orange"><div class="day-name">MIÉ · Simulador</div><div class="day-session">Z2 sostenida</div><div class="day-detail">60 min · intensidad cómoda y cadencia estable.</div></div>
+    <div class="day-item day-gray"><div class="day-name">JUE</div><div class="day-session">💤 Descanso</div><div class="day-detail">Descanso completo.</div></div>
+    <div class="day-item day-green"><div class="day-name">SÁB · Run</div><div class="day-session">8 × 400 m</div><div class="day-detail">Calentamiento + repeticiones controladas + recuperación + enfriamiento.</div></div>
+    <div class="day-item day-green"><div class="day-name">DOM · Run</div><div class="day-session">Rodaje 70 min</div><div class="day-detail">Mayormente fácil; solo acelera si estás recuperado.</div></div>
+  </div>
+
+  <div id="week-2" class="hidden">
+    <div class="alert alert-orange">S3 — Carga alta prevista. Si acumulas fatiga, sustituye una sesión por recuperación.</div>
+    <div class="day-item day-orange"><div class="day-name">LUN · Simulador</div><div class="day-session">2 × 20 min</div><div class="day-detail">90 min · bloques sostenidos a intensidad controlada.</div></div>
+    <div class="day-item day-orange"><div class="day-name">MAR · Simulador</div><div class="day-session">Over-under 3 × 10 min</div><div class="day-detail">80 min · alternancia de intensidades moderadas; recuperación completa.</div></div>
+    <div class="day-item day-orange"><div class="day-name">MIÉ · Simulador</div><div class="day-session">Recuperación aeróbica</div><div class="day-detail">45 min muy cómodo.</div></div>
+    <div class="day-item day-gray"><div class="day-name">JUE</div><div class="day-session">💤 Descanso total</div><div class="day-detail">Sin entrenamiento.</div></div>
+    <div class="day-item day-green"><div class="day-name">SÁB · Run</div><div class="day-session">Tempo controlado</div><div class="day-detail">15 min calentamiento + bloque tempo controlado + 15 min enfriamiento.</div></div>
+    <div class="day-item day-green"><div class="day-name">DOM · Run</div><div class="day-session">Rodaje fácil 60 min</div><div class="day-detail">Recuperación; sin perseguir pace.</div></div>
+  </div>
+
+  <div id="week-3" class="hidden">
+    <div class="alert alert-green">S4 — Descarga y evaluación. No conviertas el test en una obligación si estás fatigado.</div>
+    <div class="day-item day-orange"><div class="day-name">LUN · Simulador</div><div class="day-session">2 × 15 min</div><div class="day-detail">75 min · volumen reducido.</div></div>
+    <div class="day-item day-orange"><div class="day-name">MAR · Simulador</div><div class="day-session">Z2 + activaciones</div><div class="day-detail">50 min · sesión ligera.</div></div>
+    <div class="day-item day-orange"><div class="day-name">MIÉ · Simulador</div><div class="day-session">Test de referencia</div><div class="day-detail">Solo si estás descansado. Registra resultado y condiciones para compararlo después.</div></div>
+    <div class="day-item day-gray"><div class="day-name">JUE</div><div class="day-session">💤 Descanso</div><div class="day-detail">Descanso.</div></div>
+    <div class="day-item day-green"><div class="day-name">SÁB · Run</div><div class="day-session">Test de referencia</div><div class="day-detail">Calentamiento + prueba controlada + enfriamiento. No fuerces si hay dolor o síntomas.</div></div>
+    <div class="day-item day-green"><div class="day-name">DOM · Run</div><div class="day-session">Recuperación 30 min</div><div class="day-detail">Muy suave o descanso según cómo te encuentres.</div></div>
+  </div>
+</section>
+
+<section id="tab-nutri" class="section hidden">
+  <div class="alert alert-yellow">
+    Esta sección es orientativa. Las cantidades de comida y energía deben ajustarse a edad, crecimiento, actividad y necesidades individuales con un profesional de salud/deporte.
+  </div>
+  <div class="toggle-row">
+    <button class="toggle-btn active" data-nutri="bgta">🏙️ Bogotá</button>
+    <button class="toggle-btn" data-nutri="flor">🌄 Floridablanca</button>
+  </div>
+
+  <div id="nutri-bgta">
+    <div class="food-item"><div class="food-time">Antes de entrenar</div><div class="food-name">Comida sencilla</div><ul class="food-items"><li>Fruta + una fuente de carbohidrato.</li><li>Agua según sed.</li></ul></div>
+    <div class="food-item"><div class="food-time">Después de entrenar</div><div class="food-name">Recuperación</div><ul class="food-items"><li>Comida normal con carbohidrato, proteína, fruta/verduras y líquidos.</li></ul></div>
+    <div class="food-item"><div class="food-time">Almuerzo</div><div class="food-name">Plato completo</div><ul class="food-items"><li>Proteína + arroz/papa/arepa u otro carbohidrato + verduras + fruta.</li></ul></div>
+    <div class="food-item"><div class="food-time">Cena</div><div class="food-name">Comida completa</div><ul class="food-items"><li>No es necesario eliminar carbohidratos por no entrenar.</li></ul></div>
+  </div>
+
+  <div id="nutri-flor" class="hidden">
+    <div class="food-item"><div class="food-time">Antes de correr</div><div class="food-name">Energía fácil</div><ul class="food-items"><li>Fruta y/o una fuente de carbohidrato que toleres bien.</li></ul></div>
+    <div class="food-item"><div class="food-time">Después de correr</div><div class="food-name">Desayuno completo</div><ul class="food-items"><li>Carbohidrato + proteína + fruta/verduras + líquidos.</li></ul></div>
+    <div class="food-item"><div class="food-time">Resto del día</div><div class="food-name">Alimentación normal</div><ul class="food-items"><li>Comidas variadas y suficientes para la carga de entrenamiento.</li></ul></div>
+  </div>
+</section>
+
+<section id="tab-medidas" class="section hidden">
+  <div class="alert alert-yellow">
+    Para seguimiento deportivo, registra datos en condiciones similares. No uses medidas corporales como criterio único de progreso.
+  </div>
+  <div class="card">
+    <div class="label label-yellow">Historial</div>
+    <div style="overflow-x:auto;margin-top:8px">
+      <table>
+        <thead><tr><th>Medida</th><th>Dic 25</th><th>Ene 26</th><th>Mar 26</th></tr></thead>
+        <tbody>
+          <tr><td>Peso</td><td>76.5</td><td>76.2</td><td>76.8</td></tr>
+          <tr><td>Pecho</td><td>97.5</td><td>97.0</td><td>97.0</td></tr>
+          <tr><td>Barriga</td><td>92.5</td><td>92.0</td><td>91.5</td></tr>
+          <tr><td>Cintura</td><td>89.0</td><td>90.0</td><td>90.5</td></tr>
+          <tr><td>Cola</td><td>97.0</td><td>97.0</td><td>97.5</td></tr>
+          <tr><td>Pierna</td><td>57.0</td><td>57.0</td><td>57.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="label label-blue">Seguimiento recomendado</div>
+    <p class="small" style="margin-top:8px">
+      Añade también sueño, energía, dolor/molestias, carga de entrenamiento y rendimiento.
+      Una sola medida corporal no determina por sí sola el progreso deportivo.
+    </p>
+  </div>
+</section>
+</main>
+
+<footer class="bottom-nav">
+  <button class="nav-item active" data-tab="hoy"><div class="nav-icon">📅</div><div class="nav-label">Hoy</div></button>
+  <button class="nav-item" data-tab="entreno"><div class="nav-icon">🚴</div><div class="nav-label">Entreno</div></button>
+  <button class="nav-item" data-tab="nutri"><div class="nav-icon">🍽️</div><div class="nav-label">Nutrición</div></button>
+  <button class="nav-item" data-tab="medidas"><div class="nav-icon">📏</div><div class="nav-label">Medidas</div></button>
+</footer>
+
+<script>
+const tabs = ["hoy","entreno","nutri","medidas"];
+
+function showTab(id){
+  tabs.forEach((t,i)=>{
+    document.getElementById("tab-"+t).classList.toggle("hidden",t!==id);
+    document.querySelectorAll(".tab")[i].classList.toggle("active",t===id);
+    document.querySelectorAll(".nav-item")[i].classList.toggle("active",t===id);
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.querySelectorAll("[data-tab]").forEach(el=>{
+  el.addEventListener("click",()=>showTab(el.dataset.tab));
+});
+
+document.querySelectorAll(".week-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const idx=Number(btn.dataset.week);
+    document.querySelectorAll(".week-btn").forEach((b,i)=>b.classList.toggle("active",i===idx));
+    [0,1,2,3].forEach(i=>document.getElementById("week-"+i).classList.toggle("hidden",i!==idx));
+  });
+});
+
+document.querySelectorAll(".toggle-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const id=btn.dataset.nutri;
+    document.querySelectorAll(".toggle-btn").forEach(b=>b.classList.toggle("active",b===btn));
+    ["bgta","flor"].forEach(x=>document.getElementById("nutri-"+x).classList.toggle("hidden",x!==id));
+  });
+});
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
+</body>
+</html>
