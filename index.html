@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#080C14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Plan FC">
+<link rel="manifest" href="./manifest.json">
+<title>Plan FC</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#080C14;color:#F1F5F9;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:80px}
+.header{background:linear-gradient(135deg,#0F172A,#1A2535);padding:52px 20px 16px;border-bottom:1px solid #1E293B;position:sticky;top:0;z-index:100}
+.header-sub{font-size:10px;letter-spacing:3px;color:#475569;text-transform:uppercase;margin-bottom:4px}
+.header-title{font-size:20px;font-weight:800;color:#F8FAFC}
+.header-desc{font-size:11px;color:#64748B;margin-top:2px}
+.tabs{display:flex;background:#080C14;padding:10px 12px;gap:6px;position:sticky;top:90px;z-index:99;border-bottom:1px solid #1E293B;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:8px 12px;border-radius:8px;border:1px solid #1E293B;background:#0F172A;color:#64748B;font-size:12px;font-weight:500;cursor:pointer;text-align:center;white-space:nowrap}
+.tab.active{border-color:#FB923C;background:#FB923C18;color:#FB923C;font-weight:700}
+.section{padding:16px}
+.card{background:#0F172A;border:1px solid #1E293B;border-radius:12px;padding:16px;margin-bottom:12px}
+.card-orange{border-color:#FB923C44}
+.card-green{border-color:#4ADE8044}
+.card-yellow{border-color:#FBBF2444}
+.card-red{border-color:#F8717144}
+.card-blue{border-color:#60A5FA44}
+.label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.label-orange{color:#FB923C}
+.label-green{color:#4ADE80}
+.label-yellow{color:#FBBF24}
+.label-red{color:#F87171}
+.label-blue{color:#60A5FA}
+.title{font-size:16px;font-weight:700;color:#F1F5F9;margin-bottom:4px}
+.desc{font-size:13px;color:#94A3B8;line-height:1.7;margin-top:8px}
+.alert{padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.6;margin-bottom:12px}
+.alert-orange{background:#1A0A00;border:1px solid #FB923C44;color:#FDBA74}
+.alert-green{background:#001A0A;border:1px solid #4ADE8044;color:#86EFAC}
+.alert-yellow{background:#1A1500;border:1px solid #FBBF2444;color:#FDE68A}
+.alert-blue{background:#00102A;border:1px solid #60A5FA44;color:#93C5FD}
+.alert-red{background:#1A0000;border:1px solid #F8717144;color:#FCA5A5}
+.food-item{background:#0A1628;border:1px solid #1E293B;border-radius:10px;padding:14px;margin-bottom:10px}
+.food-time{font-size:11px;color:#475569;margin-bottom:4px}
+.food-name{font-size:14px;font-weight:700;color:#F1F5F9;margin-bottom:8px}
+.food-items{padding-left:16px}
+.food-items li{font-size:13px;color:#CBD5E1;margin-bottom:4px;line-height:1.5}
+.food-note{font-size:11px;color:#FBBF24;background:#1A1500;padding:8px 10px;border-radius:6px;margin-top:10px}
+.food-macros{font-size:11px;color:#475569;margin-top:6px}
+.btn{padding:10px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-green{background:#4ADE8022;color:#4ADE80;border:1px solid #4ADE8044}
+.btn-green.done{background:#4ADE80;color:#000}
+.btn-orange{background:#FB923C22;color:#FB923C;border:1px solid #FB923C44}
+.btn-red{background:#F8717122;color:#F87171;border:1px solid #F8717144}
+.btn-blue{background:#60A5FA22;color:#60A5FA;border:1px solid #60A5FA44}
+.btn-gray{background:#1E293B;color:#94A3B8;border:1px solid #334155}
+.toggle-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.toggle-btn{padding:8px 12px;border-radius:8px;border:1px solid #1E293B;background:#0F172A;color:#64748B;font-size:12px;cursor:pointer;white-space:nowrap}
+.toggle-btn.active{border-color:#4ADE80;background:#4ADE8018;color:#4ADE80;font-weight:700}
+.metric{text-align:center}
+.metric-val{font-size:22px;font-weight:800}
+.metric-val-green{color:#4ADE80}
+.metric-val-orange{color:#FB923C}
+.metric-val-yellow{color:#FBBF24}
+.metric-label{font-size:11px;color:#64748B;margin-top:2px}
+.day-item{border-left:3px solid #1E293B;padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0;background:#0A1020}
+.day-item-orange{border-left-color:#FB923C}
+.day-item-green{border-left-color:#4ADE80}
+.day-item-gray{border-left-color:#475569}
+.day-name{font-size:12px;font-weight:700;color:#94A3B8;margin-bottom:3px}
+.day-session{font-size:14px;font-weight:600;color:#F1F5F9;margin-bottom:4px}
+.day-detail{font-size:12px;color:#64748B;line-height:1.6}
+.week-selector{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+.week-selector::-webkit-scrollbar{display:none}
+.week-btn{flex-shrink:0;padding:7px 14px;border-radius:8px;border:1px solid #1E293B;background:#0F172A;color:#64748B;font-size:12px;cursor:pointer}
+.week-btn.active{border-color:#FB923C;background:#FB923C18;color:#FB923C;font-weight:700}
+.hidden{display:none}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#0F172A;border-top:1px solid #1E293B;display:flex;padding:8px 0 20px;z-index:200}
+.nav-item{flex:1;text-align:center;cursor:pointer;padding:6px 4px}
+.nav-icon{font-size:20px;margin-bottom:2px}
+.nav-label{font-size:10px;color:#64748B}
+.nav-item.active .nav-label{color:#FB923C}
+.feel-btn{padding:12px;border-radius:10px;border:2px solid transparent;background:#0F172A;cursor:pointer;text-align:center;transition:all 0.2s}
+.feel-btn.selected{border-color:#FB923C}
+.feel-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.feel-emoji{font-size:28px;margin-bottom:4px}
+.feel-label{font-size:11px;color:#94A3B8}
+textarea{width:100%;background:#0A1628;border:1px solid #1E293B;border-radius:8px;color:#F1F5F9;font-size:13px;padding:12px;resize:none;font-family:inherit;margin-top:8px}
+textarea:focus{outline:none;border-color:#FB923C}
+.log-entry{background:#0A1628;border:1px solid #1E293B;border-radius:8px;padding:12px;margin-bottom:8px}
+.log-time{font-size:10px;color:#475569;margin-bottom:4px}
+.log-text{font-size:13px;color:#CBD5E1;line-height:1.5}
+.session-adjusted{border:1px solid #FBBF2444;background:#1A150022;border-radius:8px;padding:12px;margin-top:10px}
+.progress-bar-bg{background:#1E293B;border-radius:999px;height:6px;overflow:hidden;margin:8px 0 4px}
+.progress-bar{height:100%;border-radius:999px}
+input[type=range]{width:100%;accent-color:#FB923C;margin:8px 0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-sub">Felipe Cortés · Triatleta</div>
+  <div class="header-title">Plan FC <span id="header-fecha" style="font-weight:400;font-size:14px;color:#64748B"></span></div>
+  <div class="header-desc" id="header-ciudad">Bogotá 2,600m ↔ Floridablanca 925m</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('hoy')">📅 Hoy</div>
+  <div class="tab" onclick="showTab('sentir')">💬 Cómo me siento</div>
+  <div class="tab" onclick="showTab('comidas')">🍽️ Comidas</div>
+  <div class="tab" onclick="showTab('entreno')">🚴 Entreno</div>
+  <div class="tab" onclick="showTab('nutri')">📋 Guía</div>
+  <div class="tab" onclick="showTab('medidas')">📏 Medidas</div>
+</div>
+
+<!-- ═══ HOY ═══════════════════════════════════════════════════════════ -->
+<div id="tab-hoy" class="section">
+  <div id="feel-summary-card" class="card card-blue" style="display:none">
+    <div class="label label-blue">Estado de hoy</div>
+    <div id="feel-summary-text" style="font-size:14px;color:#F1F5F9;margin-top:4px"></div>
+    <div id="session-adjusted" class="session-adjusted hidden">
+      <div style="font-size:11px;color:#FBBF24;font-weight:700;margin-bottom:6px">⚡ SESIÓN AJUSTADA SEGÚN TU ESTADO</div>
+      <div id="adjusted-session-text" style="font-size:13px;color:#CBD5E1;line-height:1.7"></div>
+    </div>
+  </div>
+
+  <div class="card card-orange">
+    <div class="label label-orange" id="hoy-dia-label">Sesión de hoy</div>
+    <div class="title" id="hoy-session-title">Cargando...</div>
+    <div class="desc" id="hoy-session-desc"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn btn-green" id="btn-session-done" onclick="markSessionDone()">✓ Completada</button>
+      <button class="btn btn-orange" onclick="showTab('sentir')">💬 Actualizar estado</button>
+    </div>
+    <div id="session-done-msg" class="hidden" style="margin-top:10px;font-size:13px;color:#4ADE80;font-weight:600">✅ ¡Sesión registrada!</div>
+  </div>
+
+  <div class="card card-green">
+    <div class="label label-green">Comidas de hoy</div>
+    <div id="comidas-hoy-summary" style="margin-top:8px"></div>
+    <button class="btn btn-green" style="margin-top:10px" onclick="showTab('comidas')">+ Registrar comida</button>
+  </div>
+
+  <div class="card">
+    <div class="label" style="color:#64748B">Log del día</div>
+    <div id="log-hoy" style="margin-top:8px;font-size:13px;color:#475569">Sin registros hoy.</div>
+  </div>
+</div>
+
+<!-- ═══ CÓMO ME SIENTO ════════════════════════════════════════════════ -->
+<div id="tab-sentir" class="section hidden">
+  <div class="alert alert-blue">Tu respuesta ajusta automáticamente la sesión del día.</div>
+
+  <div class="card">
+    <div class="label label-orange">¿Cómo está tu energía?</div>
+    <div class="feel-grid">
+      <div class="feel-btn" onclick="selectFeel('energia',1,this)"><div class="feel-emoji">😴</div><div class="feel-label">Sin energía</div></div>
+      <div class="feel-btn" onclick="selectFeel('energia',2,this)"><div class="feel-emoji">😐</div><div class="feel-label">Regular</div></div>
+      <div class="feel-btn" onclick="selectFeel('energia',3,this)"><div class="feel-emoji">⚡</div><div class="feel-label">Con energía</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label label-blue">¿Cómo dormiste?</div>
+    <div class="feel-grid">
+      <div class="feel-btn" onclick="selectFeel('sueno',1,this)"><div class="feel-emoji">😫</div><div class="feel-label">Mal (&lt;5h)</div></div>
+      <div class="feel-btn" onclick="selectFeel('sueno',2,this)"><div class="feel-emoji">😴</div><div class="feel-label">Regular (5-7h)</div></div>
+      <div class="feel-btn" onclick="selectFeel('sueno',3,this)"><div class="feel-emoji">😊</div><div class="feel-label">Bien (+7h)</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label label-red">¿Dolor o fatiga muscular?</div>
+    <div class="feel-grid">
+      <div class="feel-btn" onclick="selectFeel('dolor',3,this)"><div class="feel-emoji">💪</div><div class="feel-label">Sin dolor</div></div>
+      <div class="feel-btn" onclick="selectFeel('dolor',2,this)"><div class="feel-emoji">😬</div><div class="feel-label">Algo cargado</div></div>
+      <div class="feel-btn" onclick="selectFeel('dolor',1,this)"><div class="feel-emoji">🤕</div><div class="feel-label">Muy cargado</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label label-yellow">Notas adicionales (opcional)</div>
+    <textarea id="feel-notas" rows="3" placeholder="Ej: dormí mal por el bus, piernas pesadas, me siento bien para apretar..."></textarea>
+  </div>
+
+  <button class="btn btn-orange" style="width:100%;justify-content:center;padding:14px;font-size:14px" onclick="saveFeel()">
+    ⚡ Guardar y ajustar sesión
+  </button>
+
+  <div id="feel-result" class="hidden" style="margin-top:16px"></div>
+</div>
+
+<!-- ═══ COMIDAS DEL DÍA ════════════════════════════════════════════════ -->
+<div id="tab-comidas" class="section hidden">
+  <div class="alert alert-green">Registra lo que comiste realmente vs lo propuesto.</div>
+
+  <div id="comidas-list"></div>
+
+  <div class="card" style="margin-top:4px">
+    <div class="label label-green">Añadir comida libre</div>
+    <textarea id="comida-libre-text" rows="2" placeholder="Ej: almuerzo ejecutivo - pollo con ensalada, sin jugo"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn btn-gray" onclick="addComidaLibre('⚡ Pre-entreno')">⚡ Pre</button>
+      <button class="btn btn-gray" onclick="addComidaLibre('🔄 Post-entreno')">🔄 Post</button>
+      <button class="btn btn-gray" onclick="addComidaLibre('🍽️ Almuerzo')">🍽️ Almuerzo</button>
+      <button class="btn btn-gray" onclick="addComidaLibre('🥜 Snack')">🥜 Snack</button>
+      <button class="btn btn-gray" onclick="addComidaLibre('🌙 Cena')">🌙 Cena</button>
+    </div>
+  </div>
+
+  <div class="card card-yellow" style="margin-top:4px">
+    <div class="label label-yellow">Resumen del día</div>
+    <div id="resumen-macros" style="margin-top:8px;font-size:13px;color:#CBD5E1"></div>
+  </div>
+</div>
+
+<!-- ═══ ENTRENAMIENTO ════════════════════════════════════════════════ -->
+<div id="tab-entreno" class="section hidden">
+  <div class="week-selector">
+    <div class="week-btn active" onclick="showWeek(0)">S1 · 15-21 ago</div>
+    <div class="week-btn" onclick="showWeek(1)">S2 · 22-28 ago</div>
+    <div class="week-btn" onclick="showWeek(2)">S3 · 29 ago</div>
+    <div class="week-btn" onclick="showWeek(3)">S4 · Test</div>
+  </div>
+
+  <div id="week-0">
+    <div class="alert alert-orange">S1 — Acondicionamiento base. Foco: cadencia 90 rpm simulador, 87 spm run.</div>
+    <div class="day-item day-item-gray"><div class="day-name">DOM 16 ago · Floridablanca</div><div class="day-session">🏃 Run suave recuperación</div><div class="day-detail">45 min · 5:55-6:10/km · FC &lt;150 bpm · cadencia 86-87 spm · no cronometres pace</div></div>
+    <div class="day-item day-item-green"><div class="day-name">LUN 17 ago · Floridablanca</div><div class="day-session">🏃 Run calidad — antes del viaje</div><div class="day-detail">50 min · calent 10 + 20 min metrónomo 88 spm + 3x2 min a 4:50/km + enfriamiento · FC tope 165</div></div>
+    <div class="day-item day-item-gray"><div class="day-name">LUN noche · Bus 10h</div><div class="day-session">🚌 Protocolo viaje</div><div class="day-detail">Sin simulador antes del bus · 200ml agua/hora · huevos + atún + maní en bolso · estira en paradas</div></div>
+    <div class="day-item day-item-gray"><div class="day-name">MAR 18 ago · Llegada Bogotá</div><div class="day-session">💤 Descanso o Z2 suave opcional</div><div class="day-detail">Si dormiste bien en bus → Z2 45 min 165-175W noche · Si llegaste cansado → descanso total</div></div>
+    <div class="day-item day-item-orange"><div class="day-name">MIÉ 19 ago · Bogotá · Simulador</div><div class="day-session">🚴 Sweet spot 2x12min</div><div class="day-detail">65 min · calent 15 + 2x12 min 194-205W · cadencia 88-92 rpm · recuperación 4 min · FC tope 160</div></div>
+    <div class="day-item day-item-orange"><div class="day-name">JUE 20 ago · Bogotá · Simulador</div><div class="day-session">🚴 Z2 base cadencia</div><div class="day-detail">55 min · 175-185W · cadencia 90-93 rpm todo el tiempo · FC &lt;148 bpm</div></div>
+    <div class="day-item day-item-gray"><div class="day-name">VIE 21 ago · Descanso</div><div class="day-session">💤 Descanso</div><div class="day-detail">Movilidad 15 min · prepara kit fin de semana en Floridablanca</div></div>
+  </div>
+
+  <div id="week-1" class="hidden">
+    <div class="alert alert-orange">S2 — Intensidad progresiva. Un bloque más en sweet spot.</div>
+    <div class="day-item day-item-orange"><div class="day-name">LUN · Bogotá · Simulador</div><div class="day-session">🚴 Sweet spot 3x12min</div><div class="day-detail">75 min · 3x12 min 198-208W · cadencia 90-93 rpm · recuperación 4 min</div></div>
+    <div class="day-item day-item-orange"><div class="day-name">MAR · Bogotá · Simulador</div><div class="day-session">🚴 Intervalos 6x3min</div><div class="day-detail">65 min · 6x3 min 215-225W · cadencia 88-91 rpm · recuperación 3 min a 150W · FC máx 168</div></div>
+    <div class="day-item day-item-orange"><div class="day-name">MIÉ · Bogotá · Simulador</div><div class="day-session">🚴 Z2 largo cadencia</div><div class="day-detail">60 min a 175-185W · cadencia 91-94 rpm todo el tiempo · si baja de 89 bajas potencia</div></div>
+    <div class="day-item day-item-gray"><div class="day-name">JUE · Descanso</div><div class="day-session">💤 Descanso</div><div class="day-detail">Descanso completo</div></div>
+    <div class="day-item day-item-green"><div class="day-name">SÁB · Floridablanca 925m</div><div class="day-session">🏃 Intervalos 8x400m</div><div class="day-detail">Calent 15 + 8x400m a 4:35-4:45/km con 90s pausa + enfriamiento 15 · cadencia 87-89 spm</div></div>
+    <div class="day-item day-item-green"><div class="day-name">DOM · Floridablanca 925m</div><div class="day-session">🏃 Long run 70 min</div><div class="day-detail">50 min a 5:45/km + últimos 20 min a 5:20-5:30/km · FC &lt;158 · cadencia 86-88 spm</div></div>
+  </div>
+
+  <div id="week-2" class="hidden">
+    <div class="alert alert-red">⭐ S3 — Pico de carga. La semana más exigente.</div>
+    <div class="day-item day-item-orange"><div class="day-name">LUN · Bogotá · Simulador ⭐</div><div class="day-session">🚴 Sweet spot 2x20min</div><div class="day-detail">90 min · 2x20 min 202-212W · cadencia 90-93 rpm · recuperación 5 min</div></div>
+    <div class="day-item day-item-orange"><div class="day-name">MAR · Bogotá · Simulador</div><div class="day-session">🚴 Over-unders 3x10min</div><div class="day-detail">80 min · 3x10 min alternando 3 min 190W / 2 min 240W · recuperación 4 min</div></div>
+    <div class="day-item day-item-orange"><div class="day-name">MIÉ · Bogotá · Simulador</div><div class="day-session">🚴 Z2 recuperación activa</div><div class="day-detail">45 min 165-175W · cadencia 90+ rpm · FC &lt;145</div></div>
+    <div class="day-item day-item-gray"><div class="day-name">JUE · Descanso</div><div class="day-session">💤 Descanso total</div><div class="day-detail">Descanso completo</div></div>
+    <div class="day-item day-item-green"><div class="day-name">SÁB · Floridablanca 925m ⭐</div><div class="day-session">🏃 Tempo 30 min continuo</div><div class="day-detail">Calent 15 + 30 min 5:00-5:10/km FC 160-167 + enfriamiento 15</div></div>
+    <div class="day-item day-item-green"><div class="day-name">DOM · Floridablanca 925m</div><div class="day-session">🏃 Long run fácil 60 min</div><div class="day-detail">60 min suave 5:55-6:10/km · FC &lt;150 · no cronometres nada</div></div>
+  </div>
+
+  <div id="week-3" class="hidden">
+    <div class="alert alert-green">S4 — Descarga + Test. Mide el progreso real.</div>
+    <div class="day-item day-item-orange"><div class="day-name">LUN · Bogotá · Simulador</div><div class="day-session">🚴 Sweet spot 2x15min</div><div class="day-detail">75 min · 2x15 min 205-215W · volumen reducido vs S3</div></div>
+    <div class="day-item day-item-orange"><div class="day-name">MAR · Bogotá · Simulador</div><div class="day-session">🚴 Z2 + sprints activación</div><div class="day-detail">50 min · 30 min Z2 175W + 5 sprints 10 seg</div></div>
+    <div class="day-item day-item-orange"><div class="day-name">MIÉ · Bogotá · Simulador ⭐</div><div class="day-session">🚴 Test FTP 20 min</div><div class="day-detail">Calent 15 + 5 min 105% FTP + 5 min suave + 20 min TEST máximo + enfriamiento · resultado x 0.95 = FTP real</div></div>
+    <div class="day-item day-item-gray"><div class="day-name">JUE · Descanso</div><div class="day-session">💤 Descanso</div><div class="day-detail">Descansa antes del test de run</div></div>
+    <div class="day-item day-item-green"><div class="day-name">SÁB · Floridablanca 925m ⭐</div><div class="day-session">🏃 Test 10K</div><div class="day-detail">Calent 10 + 10K máximo sostenible · objetivo sub 50:00 · cadencia 87-89 spm · ref: 52:26 del 15 ago</div></div>
+    <div class="day-item day-item-green"><div class="day-name">DOM · Floridablanca 925m</div><div class="day-session">🏃 Recuperación 30 min</div><div class="day-detail">30 min muy suave · FC &lt;140 · solo recuperar</div></div>
+  </div>
+</div>
+
+<!-- ═══ GUÍA NUTRICIÓN ════════════════════════════════════════════════ -->
+<div id="tab-nutri" class="section hidden">
+  <div class="toggle-row">
+    <div class="toggle-btn active" onclick="showNutri('bgta')">🏙️ Bogotá</div>
+    <div class="toggle-btn" onclick="showNutri('flor')">🌄 Floridablanca</div>
+    <div class="toggle-btn" onclick="showNutri('bus')">🚌 Viaje</div>
+    <div class="toggle-btn" onclick="showNutri('compras')">🛒 Compras</div>
+  </div>
+
+  <div id="nutri-bgta">
+    <div class="alert alert-green">Entre semana Bogotá — todo en Oxxo o fácil de preparar.</div>
+    <div class="food-item"><div class="food-time">⚡ 5:00am · Pre-entreno OBLIGATORIO</div><div class="food-name">Antes de salir</div><ul class="food-items"><li><b>Opción A — sesión Z2:</b> 1 banano + maní natural Oxxo + café</li><li><b>Opción B — intervalos:</b> 2 huevos duros + 1 arepa + café</li></ul><div class="food-note">💡 Prepara huevos la noche anterior. 10 min hirviendo, nevera. 0 tiempo en la mañana.</div><div class="food-macros">A: ~280 kcal · 7g prot &nbsp;|&nbsp; B: ~350 kcal · 18g prot</div></div>
+    <div class="food-item"><div class="food-time">🔄 7:00-7:30am · Post-entreno · máx 30 min</div><div class="food-name">Ventana crítica de recuperación</div><ul class="food-items"><li><b>Oxxo:</b> Yogur griego natural 170g + 1 banano o manzana</li><li><b>Casa:</b> 3 huevos revueltos con tomate + fruta entera + agua 500ml</li></ul><div class="food-note">💡 Sin esto el entrenamiento recupera un 30% menos. No es opcional.</div><div class="food-macros">Oxxo: ~220 kcal · 15g prot &nbsp;|&nbsp; Casa: ~280 kcal · 22g prot</div></div>
+    <div class="food-item"><div class="food-time">🍽️ 12:30pm · Almuerzo ejecutivo</div><div class="food-name">Protocolo fijo — mismo todos los días</div><ul class="food-items"><li><b>Paso 1:</b> Sirve la proteína primero (pollo/res/pescado) — tamaño palma de la mano</li><li><b>Paso 2:</b> 50% del plato: ensalada o verduras. Pide extra si hay poca.</li><li><b>Paso 3:</b> 25% restante: arroz O papa. Solo uno.</li><li>Agua o agua de panela sin azúcar. No jugo de caja.</li><li>Pan de la mesa: no lo toques antes de comer.</li></ul><div class="food-note">💡 Si hay sopa, tómala. Pero no llenes el plato después como si no hubieras comido.</div><div class="food-macros">~600 kcal · ~38g prot</div></div>
+    <div class="food-item"><div class="food-time">🥜 3:30pm · Snack tarde — no opcional</div><div class="food-name">Evita llegar con hambre a la cena</div><ul class="food-items"><li><b>Oxxo A:</b> Maní natural sin sal 30g + manzana o pera</li><li><b>Oxxo B:</b> 1 lata atún en agua + 4-5 galletas de arroz</li><li><b>Casa:</b> 2 huevos duros + 1 fruta</li></ul><div class="food-note">💡 Sin snack = 6-7h de hambre → comes el doble en la cena.</div><div class="food-macros">~180-220 kcal · ~7-22g prot</div></div>
+    <div class="food-item"><div class="food-time">🌙 7:30pm · Cena</div><div class="food-name">CHO según si entrenaste o no</div><ul class="food-items"><li><b>Lun/Mié (entrenaste):</b> 3 huevos + ensalada tomate/pepino/aceite + ½ aguacate</li><li><b>Mar/Jue (entrenaste fuerte):</b> Atún + arroz pequeño (3-4 cucharadas) + vegetales</li><li><b>Jue (descanso):</b> 2 huevos + sardinas + ensalada — sin arroz ni papa</li><li><b>Viernes:</b> Libre — mantén proteína presente</li></ul><div class="food-note">💡 Regla clave: sin entrenaste = sin arroz ni papa. El déficit se crea aquí.</div><div class="food-macros">~350-500 kcal · ~22-30g prot</div></div>
+    <div class="card card-green" style="margin-top:12px"><div class="label label-green">Totales diarios</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px"><div class="metric"><div class="metric-val metric-val-green" style="font-size:17px">2,200</div><div class="metric-label">kcal entreno</div></div><div class="metric"><div class="metric-val metric-val-green" style="font-size:17px">150g</div><div class="metric-label">proteína/día</div></div><div class="metric"><div class="metric-val metric-val-orange" style="font-size:17px">1,800</div><div class="metric-label">kcal descanso</div></div></div></div>
+  </div>
+
+  <div id="nutri-flor" class="hidden">
+    <div class="alert alert-green">Fin de semana Floridablanca 925m — el desayuno post-run es el más importante.</div>
+    <div class="food-item"><div class="food-time">🏃 5:30am · Pre-run</div><div class="food-name">Antes de salir</div><ul class="food-items"><li><b>Run hasta 10km:</b> 1 banano + maní + café</li><li><b>Run 14km o más:</b> 2 huevos duros + 1 banano + café · come 30-45 min antes</li></ul><div class="food-note">💡 No salgas en ayunas a runs largos. El cuerpo quema músculo, no grasa.</div><div class="food-macros">~280-380 kcal · ~7-19g prot</div></div>
+    <div class="food-item"><div class="food-time">🔄 7:30am · Post-run — desayuno completo</div><div class="food-name">El más importante de la semana</div><ul class="food-items"><li>3 huevos (como prefieras)</li><li>1 arepa mediana</li><li>1 fruta entera: banano, mango, papaya</li><li>Café con leche si quieres</li><li>Agua 500ml mínimo</li></ul><div class="food-note">💡 Sin este desayuno el run de hoy no produce adaptaciones.</div><div class="food-macros">~480 kcal · ~28g prot</div></div>
+    <div class="food-item"><div class="food-time">🍽️ 1:00pm · Almuerzo</div><div class="food-name">Mismo protocolo ejecutivo</div><ul class="food-items"><li>50% verduras · 25% proteína · 25% CHO · agua no jugo</li></ul><div class="food-note">💡 Fin de semana no es excusa para romper el protocolo.</div><div class="food-macros">~620 kcal · ~38g prot</div></div>
+    <div class="food-item"><div class="food-time">🌙 7:00pm · Cena</div><div class="food-name">Sábado flexible · Domingo protocolo</div><ul class="food-items"><li><b>Sábado:</b> Proteína + ensalada + CHO moderado OK</li><li><b>Domingo:</b> Proteína + verduras + mínimo CHO</li><li><b>Domingo noche:</b> Hierve 4-5 huevos → nevera → llevas 2 al bus el lunes</li></ul><div class="food-macros">~400-520 kcal · ~28-32g prot</div></div>
+  </div>
+
+  <div id="nutri-bus" class="hidden">
+    <div class="alert alert-yellow">🚌 Floridablanca → Bogotá · 10 horas · Protocolo completo</div>
+    <div class="food-item"><div class="food-time">🌙 Noche anterior</div><div class="food-name">Preparación</div><ul class="food-items"><li>Cena con proteína + CHO moderado</li><li>Hervir 4 huevos duros, guardar en bolsa</li><li>Comprar en Oxxo: 2 latas atún, maní, 2 bananos, agua 1.5L</li><li>500ml agua antes de dormir</li></ul></div>
+    <div class="food-item"><div class="food-time">🚌 Antes de subir</div><div class="food-name">No salgas en ayunas</div><ul class="food-items"><li>2 huevos duros + 1 arepa o tostada</li><li>500ml agua</li><li>NO hagas simulador antes del bus aunque te sientas bien</li></ul></div>
+    <div class="food-item"><div class="food-time">🌙 Durante 10h</div><div class="food-name">Protocolo en ruta</div><ul class="food-items"><li><b>Hidratación:</b> 200ml agua cada hora — pon alarma en el celular</li><li><b>Hora 2-3:</b> 2 huevos duros + maní</li><li><b>Hora 5-6:</b> 1 lata atún + 1 banano</li><li><b>Hora 8-9:</b> Maní + agua</li><li><b>NO compres en paradas:</b> empanadas, papas, gaseosas</li><li>Estira piernas 2-3 min en cada parada</li></ul><div class="food-note">💡 Total agua objetivo: 1.5-2L. El AC del bus deshidrata sin sudar.</div></div>
+    <div class="food-item"><div class="food-time">🌅 Llegada Bogotá · madrugada</div><div class="food-name">Protocolo de llegada</div><ul class="food-items"><li>500ml agua o electrolitos inmediato</li><li>Proteína ligera si hay (huevos, atún, yogur)</li><li>Duerme mínimo 4-5h antes de cualquier decisión</li><li><b>Bien dormido en bus:</b> Z2 suave 45 min martes noche está bien</li><li><b>Mal dormido:</b> Descanso total martes sin culpa</li></ul></div>
+  </div>
+
+  <div id="nutri-compras" class="hidden">
+    <div class="alert alert-green">🛒 Lista semanal · 5 días Bogotá · todo en Oxxo o supermercado</div>
+    <div class="food-item"><div class="food-time">🥚 Proteínas</div><div class="food-name">Lo que nunca puede faltar</div><ul class="food-items"><li>Huevos: <b>12-15 unidades</b></li><li>Atún en agua Albia: <b>5-6 latas</b></li><li>Yogur griego natural: <b>3-4 unidades 170g</b></li><li>Pechuga pollo: <b>500g</b></li></ul></div>
+    <div class="food-item"><div class="food-time">🥜 Grasas y snacks</div><div class="food-name">Oxxo siempre disponibles</div><ul class="food-items"><li>Maní natural sin sal: <b>1 bolsa grande</b></li><li>Aguacate: <b>2-3 unidades</b></li><li>Aceite de oliva: <b>1 botella pequeña</b></li></ul></div>
+    <div class="food-item"><div class="food-time">🍌 Carbohidratos y frutas</div><div class="food-name">Pre y post-entreno</div><ul class="food-items"><li>Bananos: <b>7-8 unidades</b></li><li>Manzanas o peras: <b>4-5 unidades</b></li><li>Arepas: <b>1 paquete</b></li></ul></div>
+    <div class="food-item"><div class="food-time">🥗 Verduras cenas</div><div class="food-name">Lunes a jueves</div><ul class="food-items"><li>Tomates: 4-5 · Pepinos: 2-3 · Lechuga/espinaca: 1 bolsa</li><li>Zanahoria: 3-4 · Brócoli congelado: 1 bolsa</li></ul></div>
+    <div class="food-item"><div class="food-time">🚌 Kit viaje bus</div><div class="food-name">Comprar antes de salir</div><ul class="food-items"><li>2 latas atún · 2 bananos · 1 bolsa maní · 1.5L agua</li><li>4 huevos duros (hervidos en casa)</li></ul><div class="food-note">💡 ~$15,000-20,000 COP · ~500 kcal · ~35g prot</div></div>
+    <div class="card card-yellow" style="margin-top:4px"><div class="label label-yellow">Costo semanal estimado</div><div style="font-size:13px;color:#CBD5E1;line-height:1.9;margin-top:8px">Huevos 15u: ~$8,000 · Atún 6 latas: ~$18,000<br>Yogur griego 4u: ~$20,000 · Maní: ~$12,000<br>Frutas y verduras: ~$15,000 · Pollo 500g: ~$10,000<br><b style="color:#FBBF24">Total: ~$83,000 COP/semana</b></div></div>
+  </div>
+</div>
+
+<!-- ═══ MEDIDAS ═══════════════════════════════════════════════════════ -->
+<div id="tab-medidas" class="section hidden">
+  <div class="alert alert-yellow">📅 Mide cada 4 semanas · ayunas · misma hora.</div>
+  <div class="card"><div class="label label-yellow">Historial</div><div style="overflow-x:auto;margin-top:10px"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="border-bottom:1px solid #1E293B"><th style="text-align:left;padding:8px 6px;color:#64748B">Medida</th><th style="text-align:center;padding:8px 4px;color:#64748B">Dic 25</th><th style="text-align:center;padding:8px 4px;color:#64748B">Ene 26</th><th style="text-align:center;padding:8px 4px;color:#64748B">Mar 26</th><th style="text-align:center;padding:8px 4px;color:#FBBF24">Obj</th></tr></thead><tbody><tr style="border-bottom:1px solid #0F172A"><td style="padding:8px 6px;color:#94A3B8">Peso kg</td><td style="text-align:center;padding:8px 4px">76.5</td><td style="text-align:center;padding:8px 4px">76.2</td><td style="text-align:center;padding:8px 4px">76.8</td><td style="text-align:center;padding:8px 4px;color:#FBBF24;font-weight:700">72.0</td></tr><tr style="border-bottom:1px solid #0F172A"><td style="padding:8px 6px;color:#94A3B8">Pecho cm</td><td style="text-align:center;padding:8px 4px">97.5</td><td style="text-align:center;padding:8px 4px">97.0</td><td style="text-align:center;padding:8px 4px">97.0</td><td style="text-align:center;padding:8px 4px;color:#FBBF24;font-weight:700">95.0</td></tr><tr style="border-bottom:1px solid #0F172A"><td style="padding:8px 6px;color:#94A3B8">Barriga cm</td><td style="text-align:center;padding:8px 4px">92.5</td><td style="text-align:center;padding:8px 4px">92.0</td><td style="text-align:center;padding:8px 4px;color:#4ADE80">91.5✅</td><td style="text-align:center;padding:8px 4px;color:#FBBF24;font-weight:700">88.0</td></tr><tr style="border-bottom:1px solid #0F172A"><td style="padding:8px 6px;color:#94A3B8">Cintura cm</td><td style="text-align:center;padding:8px 4px">89.0</td><td style="text-align:center;padding:8px 4px">90.0</td><td style="text-align:center;padding:8px 4px;color:#F87171">90.5⚠️</td><td style="text-align:center;padding:8px 4px;color:#FBBF24;font-weight:700">86.0</td></tr><tr style="border-bottom:1px solid #0F172A"><td style="padding:8px 6px;color:#94A3B8">Cola cm</td><td style="text-align:center;padding:8px 4px">97.0</td><td style="text-align:center;padding:8px 4px">97.0</td><td style="text-align:center;padding:8px 4px">97.5</td><td style="text-align:center;padding:8px 4px;color:#FBBF24;font-weight:700">96.0</td></tr><tr><td style="padding:8px 6px;color:#94A3B8">Pierna cm</td><td style="text-align:center;padding:8px 4px">57.0</td><td style="text-align:center;padding:8px 4px">57.0</td><td style="text-align:center;padding:8px 4px">57.5</td><td style="text-align:center;padding:8px 4px;color:#4ADE80;font-weight:700">57.5✅</td></tr></tbody></table></div></div>
+  <div class="card card-yellow"><div class="label label-yellow">Nueva medición</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+      <div><div style="font-size:11px;color:#64748B;margin-bottom:4px">Peso (kg)</div><input type="number" id="m-peso" placeholder="76.8" style="width:100%;background:#0A1628;border:1px solid #1E293B;border-radius:6px;color:#F1F5F9;font-size:14px;padding:8px 10px"></div>
+      <div><div style="font-size:11px;color:#64748B;margin-bottom:4px">Barriga (cm)</div><input type="number" id="m-barriga" placeholder="91.5" style="width:100%;background:#0A1628;border:1px solid #1E293B;border-radius:6px;color:#F1F5F9;font-size:14px;padding:8px 10px"></div>
+      <div><div style="font-size:11px;color:#64748B;margin-bottom:4px">Cintura (cm)</div><input type="number" id="m-cintura" placeholder="90.5" style="width:100%;background:#0A1628;border:1px solid #1E293B;border-radius:6px;color:#F1F5F9;font-size:14px;padding:8px 10px"></div>
+      <div><div style="font-size:11px;color:#64748B;margin-bottom:4px">Pecho (cm)</div><input type="number" id="m-pecho" placeholder="97.0" style="width:100%;background:#0A1628;border:1px solid #1E293B;border-radius:6px;color:#F1F5F9;font-size:14px;padding:8px 10px"></div>
+    </div>
+    <button class="btn btn-orange" style="width:100%;justify-content:center;padding:12px;margin-top:12px;font-size:14px" onclick="saveMedida()">💾 Guardar medición</button>
+    <div id="medida-saved" class="hidden" style="margin-top:8px;font-size:13px;color:#4ADE80;text-align:center">✅ Medición guardada</div>
+  </div>
+  <div id="medidas-historial-extra" class="card hidden"><div class="label label-green">Mediciones registradas en la app</div><div id="medidas-lista" style="margin-top:10px;font-size:13px;color:#CBD5E1;line-height:2"></div></div>
+</div>
+
+<!-- Bottom nav -->
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="showTab('hoy')"><div class="nav-icon">📅</div><div class="nav-label">Hoy</div></div>
+  <div class="nav-item" onclick="showTab('sentir')"><div class="nav-icon">💬</div><div class="nav-label">Estado</div></div>
+  <div class="nav-item" onclick="showTab('comidas')"><div class="nav-icon">🍽️</div><div class="nav-label">Comidas</div></div>
+  <div class="nav-item" onclick="showTab('entreno')"><div class="nav-icon">🚴</div><div class="nav-label">Entreno</div></div>
+  <div class="nav-item" onclick="showTab('medidas')"><div class="nav-icon">📏</div><div class="nav-label">Medidas</div></div>
+</div>
+
+<script>
+// ─── ESTADO ───────────────────────────────────────────────────────────────
+var feelData = {energia:0, sueno:0, dolor:0};
+var todayKey = new Date().toISOString().slice(0,10);
+
+var SESIONES = {
+  0: {titulo:'🏃 Run suave recuperación', desc:'45 min · 5:55-6:10/km · FC <150 bpm · cadencia 86-87 spm', lugar:'Floridablanca 925m', dia:'Dom 16 ago'},
+  1: {titulo:'🏃 Run calidad', desc:'50 min · calent 10 + 20 min metrónomo 88 spm + 3x2 min a 4:50/km + enfriamiento · FC tope 165', lugar:'Floridablanca 925m', dia:'Lun 17 ago'},
+  2: {titulo:'🚌 Viaje + descanso', desc:'Bus lunes noche · Sin simulador antes de subir · Descanso o Z2 suave opcional al llegar', lugar:'Bus / Bogotá', dia:'Lun-Mar'},
+  3: {titulo:'🚴 Sweet spot 2x12min', desc:'65 min · calent 15 + 2x12 min 194-205W · cadencia 88-92 rpm · recuperación 4 min · FC tope 160', lugar:'Bogotá 2,600m', dia:'Mié 19 ago'},
+  4: {titulo:'🚴 Z2 base cadencia', desc:'55 min · 175-185W · cadencia 90-93 rpm · FC <148 bpm', lugar:'Bogotá 2,600m', dia:'Jue 20 ago'},
+  5: {titulo:'💤 Descanso', desc:'Movilidad 15 min · prepara kit fin de semana', lugar:'Bogotá', dia:'Vie 21 ago'},
+  6: {titulo:'💤 Descanso / libre', desc:'Descansa o sal tranquilo', lugar:'—', dia:'Sáb'},
+};
+
+var COMIDAS_PLAN = [
+  {id:'pre', hora:'5:00am', emoji:'⚡', nombre:'Pre-entreno', propuesto:'Banano + maní + café (sesión suave) ó 2 huevos duros + arepa + café (intervalos)'},
+  {id:'post', hora:'7:30am', emoji:'🔄', nombre:'Post-entreno', propuesto:'Yogur griego 170g + banano · ó 3 huevos revueltos + fruta'},
+  {id:'almuerzo', hora:'12:30pm', emoji:'🍽️', nombre:'Almuerzo ejecutivo', propuesto:'50% verduras · 25% proteína · 25% arroz o papa · agua no jugo'},
+  {id:'snack', hora:'3:30pm', emoji:'🥜', nombre:'Snack tarde', propuesto:'Maní sin sal 30g + manzana · ó atún + galletas de arroz'},
+  {id:'cena', hora:'7:30pm', emoji:'🌙', nombre:'Cena', propuesto:'Proteína + ensalada + aguacate · sin CHO si no entrenaste'},
+];
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+window.onload = function() {
+  var now = new Date();
+  var dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  var meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  document.getElementById('header-fecha').textContent = dias[now.getDay()] + ' ' + now.getDate() + ' ' + meses[now.getMonth()];
+
+  var dow = now.getDay(); // 0=dom,1=lun,...
+  var sesIdx = dow === 0 ? 0 : dow === 1 ? 1 : dow === 2 ? 2 : dow === 3 ? 3 : dow === 4 ? 4 : dow === 5 ? 5 : 6;
+  var ses = SESIONES[sesIdx] || SESIONES[0];
+  document.getElementById('hoy-dia-label').textContent = ses.dia + ' · ' + ses.lugar;
+  document.getElementById('hoy-session-title').textContent = ses.titulo;
+  document.getElementById('hoy-session-desc').textContent = ses.desc;
+
+  renderComidas();
+  renderComidasHoySummary();
+  renderLog();
+  loadFeel();
+  loadMedidas();
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(function(r){ console.log('SW ok', r.scope); })
+      .catch(function(e){ console.log('SW error', e); });
+  }
+};
+
+// ─── TABS ─────────────────────────────────────────────────────────────────
+var TABS = ['hoy','sentir','comidas','entreno','nutri','medidas'];
+function showTab(id) {
+  TABS.forEach(function(t){
+    document.getElementById('tab-'+t).classList.add('hidden');
+  });
+  document.getElementById('tab-'+id).classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach(function(el,i){ el.classList.remove('active'); });
+  var idx = TABS.indexOf(id);
+  if(idx>=0) document.querySelectorAll('.tab')[idx].classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(el){ el.classList.remove('active'); });
+  var navMap = {'hoy':0,'sentir':1,'comidas':2,'entreno':3,'medidas':4};
+  if(navMap[id]!==undefined) document.querySelectorAll('.nav-item')[navMap[id]].classList.add('active');
+}
+
+// ─── SEMANAS ──────────────────────────────────────────────────────────────
+function showWeek(idx) {
+  [0,1,2,3].forEach(function(i){
+    document.getElementById('week-'+i).classList.add('hidden');
+    document.querySelectorAll('.week-btn')[i].classList.remove('active');
+  });
+  document.getElementById('week-'+idx).classList.remove('hidden');
+  document.querySelectorAll('.week-btn')[idx].classList.add('active');
+}
+
+// ─── NUTRICIÓN TABS ───────────────────────────────────────────────────────
+function showNutri(id) {
+  ['bgta','flor','bus','compras'].forEach(function(n,i){
+    document.getElementById('nutri-'+n).classList.add('hidden');
+    document.querySelectorAll('.toggle-btn')[i].classList.remove('active');
+  });
+  document.getElementById('nutri-'+id).classList.remove('hidden');
+  document.querySelectorAll('.toggle-btn')[['bgta','flor','bus','compras'].indexOf(id)].classList.add('active');
+}
+
+// ─── CÓMO ME SIENTO ───────────────────────────────────────────────────────
+function selectFeel(key, val, el) {
+  feelData[key] = val;
+  var parent = el.closest('.card');
+  parent.querySelectorAll('.feel-btn').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function saveFeel() {
+  var e = feelData.energia, s = feelData.sueno, d = feelData.dolor;
+  if(!e || !s || !d) { alert('Completa los 3 campos'); return; }
+  var notas = document.getElementById('feel-notas').value;
+  var total = e + s + d;
+  var estado, sessionAdj, color;
+
+  if(total <= 4) {
+    estado = '😴 Estado bajo — cuerpo pidiendo recuperación';
+    sessionAdj = '⬇️ SESIÓN REDUCIDA: Si es simulador → Z2 suave 30-40 min a 160-170W, sin intervalos. Si es run → trote suave 30 min FC <145. No fuerces hoy.';
+    color = '#F87171';
+  } else if(total <= 6) {
+    estado = '😐 Estado regular — entrena con precaución';
+    sessionAdj = '↔️ SESIÓN MODERADA: Haz la sesión planificada pero al 85% de la intensidad. Si son intervalos, reduce 1 bloque. FC tope 5 bpm menos de lo normal.';
+    color = '#FBBF24';
+  } else {
+    estado = '⚡ Estado óptimo — adelante al 100%';
+    sessionAdj = '✅ SESIÓN COMPLETA: Ejecuta el plan tal como está. Si te sientes excepcional, puedes añadir 1 bloque extra en sweet spot o 5 min más al long run.';
+    color = '#4ADE80';
+  }
+
+  var data = {fecha: todayKey, e, s, d, estado, sessionAdj, notas, ts: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})};
+  localStorage.setItem('feel-'+todayKey, JSON.stringify(data));
+  addLog('💬 Estado registrado: ' + estado + (notas ? ' · '+notas : ''));
+
+  document.getElementById('feel-summary-card').style.display='block';
+  document.getElementById('feel-summary-text').innerHTML = '<span style="color:'+color+';font-weight:700">'+estado+'</span>';
+  document.getElementById('session-adjusted').classList.remove('hidden');
+  document.getElementById('adjusted-session-text').textContent = sessionAdj;
+
+  document.getElementById('feel-result').classList.remove('hidden');
+  document.getElementById('feel-result').innerHTML = '<div class="alert alert-green">✅ Guardado. La sesión de hoy ha sido ajustada.<br><button class="btn btn-orange" style="margin-top:8px" onclick="showTab(\'hoy\')">Ver sesión ajustada →</button></div>';
+}
+
+function loadFeel() {
+  var data = localStorage.getItem('feel-'+todayKey);
+  if(!data) return;
+  var d = JSON.parse(data);
+  document.getElementById('feel-summary-card').style.display='block';
+  document.getElementById('feel-summary-text').innerHTML = d.estado;
+  document.getElementById('session-adjusted').classList.remove('hidden');
+  document.getElementById('adjusted-session-text').textContent = d.sessionAdj;
+}
+
+// ─── COMIDAS ──────────────────────────────────────────────────────────────
+function renderComidas() {
+  var html = '';
+  var guardadas = JSON.parse(localStorage.getItem('comidas-'+todayKey)||'{}');
+  COMIDAS_PLAN.forEach(function(c) {
+    var done = guardadas[c.id];
+    html += '<div class="food-item">';
+    html += '<div class="food-time">'+c.hora+'</div>';
+    html += '<div class="food-name">'+c.emoji+' '+c.nombre+'</div>';
+    html += '<div style="font-size:12px;color:#475569;margin-bottom:8px"><b>Plan:</b> '+c.propuesto+'</div>';
+    if(done) {
+      html += '<div style="background:#001A0A;border:1px solid #4ADE8033;border-radius:6px;padding:8px 10px;font-size:12px;color:#86EFAC;margin-bottom:8px">✅ Real: '+done.real+'</div>';
+      html += '<button class="btn btn-gray" style="font-size:11px" onclick="editComida(\''+c.id+'\')">✏️ Editar</button>';
+    } else {
+      html += '<textarea id="input-'+c.id+'" rows="1" placeholder="¿Qué comiste realmente?"></textarea>';
+      html += '<button class="btn btn-green" style="margin-top:8px" onclick="saveComida(\''+c.id+'\',\''+c.nombre+'\')">✓ Registrar</button>';
+    }
+    html += '</div>';
+  });
+  document.getElementById('comidas-list').innerHTML = html;
+  renderResumenMacros();
+}
+
+function saveComida(id, nombre) {
+  var val = document.getElementById('input-'+id).value.trim();
+  if(!val) { alert('Escribe qué comiste'); return; }
+  var guardadas = JSON.parse(localStorage.getItem('comidas-'+todayKey)||'{}');
+  guardadas[id] = {real: val, ts: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})};
+  localStorage.setItem('comidas-'+todayKey, JSON.stringify(guardadas));
+  addLog('🍽️ '+nombre+': '+val);
+  renderComidas();
+  renderComidasHoySummary();
+}
+
+function editComida(id) {
+  var guardadas = JSON.parse(localStorage.getItem('comidas-'+todayKey)||'{}');
+  delete guardadas[id];
+  localStorage.setItem('comidas-'+todayKey, JSON.stringify(guardadas));
+  renderComidas();
+  renderComidasHoySummary();
+}
+
+function addComidaLibre(tipo) {
+  var val = document.getElementById('comida-libre-text').value.trim();
+  if(!val) { alert('Escribe qué comiste'); return; }
+  var key = 'libre-'+Date.now();
+  var guardadas = JSON.parse(localStorage.getItem('comidas-'+todayKey)||'{}');
+  guardadas[key] = {real: val, tipo: tipo, ts: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})};
+  localStorage.setItem('comidas-'+todayKey, JSON.stringify(guardadas));
+  addLog('🍽️ '+tipo+': '+val);
+  document.getElementById('comida-libre-text').value = '';
+  renderComidasHoySummary();
+}
+
+function renderComidasHoySummary() {
+  var guardadas = JSON.parse(localStorage.getItem('comidas-'+todayKey)||'{}');
+  var keys = Object.keys(guardadas);
+  var el = document.getElementById('comidas-hoy-summary');
+  if(!keys.length) { el.innerHTML = '<div style="font-size:13px;color:#475569">Sin comidas registradas hoy.</div>'; return; }
+  var html = '';
+  var comidaNombres = {pre:'Pre-entreno',post:'Post-entreno',almuerzo:'Almuerzo',snack:'Snack',cena:'Cena'};
+  keys.forEach(function(k){
+    var c = guardadas[k];
+    var nombre = comidaNombres[k] || c.tipo || k;
+    html += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid #1E293B"><span style="color:#94A3B8">'+nombre+'</span><span style="color:#4ADE80">✅ '+c.ts+'</span></div>';
+  });
+  el.innerHTML = html;
+}
+
+function renderResumenMacros() {
+  var guardadas = JSON.parse(localStorage.getItem('comidas-'+todayKey)||'{}');
+  var total = Object.keys(guardadas).length;
+  var el = document.getElementById('resumen-macros');
+  el.innerHTML = '<div style="font-size:22px;font-weight:800;color:#4ADE80">'+total+'/5</div><div style="font-size:12px;color:#64748B;margin-top:2px">comidas registradas hoy</div><div style="margin-top:10px;font-size:12px;color:#475569">Sigue registrando para ver tu adherencia al plan.</div>';
+}
+
+// ─── LOG ──────────────────────────────────────────────────────────────────
+function addLog(texto) {
+  var logs = JSON.parse(localStorage.getItem('log-'+todayKey)||'[]');
+  var ts = new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+  logs.push({ts, texto});
+  localStorage.setItem('log-'+todayKey, JSON.stringify(logs));
+  renderLog();
+}
+
+function renderLog() {
+  var logs = JSON.parse(localStorage.getItem('log-'+todayKey)||'[]');
+  var el = document.getElementById('log-hoy');
+  if(!logs.length) { el.innerHTML = '<div style="font-size:13px;color:#475569">Sin registros hoy.</div>'; return; }
+  el.innerHTML = logs.slice().reverse().map(function(l){
+    return '<div class="log-entry"><div class="log-time">'+l.ts+'</div><div class="log-text">'+l.texto+'</div></div>';
+  }).join('');
+}
+
+// ─── SESIÓN DONE ──────────────────────────────────────────────────────────
+function markSessionDone() {
+  localStorage.setItem('session-done-'+todayKey, '1');
+  document.getElementById('session-done-msg').classList.remove('hidden');
+  document.getElementById('btn-session-done').classList.add('done');
+  document.getElementById('btn-session-done').textContent = '✓ Completada';
+  addLog('✅ Sesión de entrenamiento completada');
+}
+
+// ─── MEDIDAS ──────────────────────────────────────────────────────────────
+function saveMedida() {
+  var peso = document.getElementById('m-peso').value;
+  var barriga = document.getElementById('m-barriga').value;
+  var cintura = document.getElementById('m-cintura').value;
+  var pecho = document.getElementById('m-pecho').value;
+  if(!peso && !barriga) { alert('Ingresa al menos peso y barriga'); return; }
+  var medidas = JSON.parse(localStorage.getItem('medidas-historial')||'[]');
+  medidas.push({fecha: todayKey, peso, barriga, cintura, pecho});
+  localStorage.setItem('medidas-historial', JSON.stringify(medidas));
+  document.getElementById('medida-saved').classList.remove('hidden');
+  setTimeout(function(){ document.getElementById('medida-saved').classList.add('hidden'); }, 3000);
+  loadMedidas();
+}
+
+function loadMedidas() {
+  var medidas = JSON.parse(localStorage.getItem('medidas-historial')||'[]');
+  if(!medidas.length) return;
+  document.getElementById('medidas-historial-extra').classList.remove('hidden');
+  var html = medidas.slice().reverse().map(function(m){
+    return '<div style="padding:6px 0;border-bottom:1px solid #1E293B"><b style="color:#FBBF24">'+m.fecha+'</b> — Peso: '+m.peso+'kg · Barriga: '+m.barriga+'cm · Cintura: '+m.cintura+'cm</div>';
+  }).join('');
+  document.getElementById('medidas-lista').innerHTML = html;
+}
+
+// ─── SESSION DONE RESTORE ─────────────────────────────────────────────────
+if(localStorage.getItem('session-done-'+todayKey)) {
+  setTimeout(function(){
+    var btn = document.getElementById('btn-session-done');
+    if(btn){ btn.classList.add('done'); btn.textContent='✓ Completada'; }
+    document.getElementById('session-done-msg').classList.remove('hidden');
+  }, 100);
+}
+</script>
+</body>
+</html>
