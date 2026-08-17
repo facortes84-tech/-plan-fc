@@ -1,0 +1,141 @@
+<!doctype html><html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080C14"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.json"><title>Plan FC — Nivel 1</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080C14;color:#F1F5F9;font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:520px;margin:auto;padding-bottom:90px}.header{padding:28px 16px 14px;background:#0F172A;border-bottom:1px solid #1E293B;position:sticky;top:0;z-index:20}.top{display:flex;justify-content:space-between;align-items:center}.eyebrow{font-size:10px;letter-spacing:2px;color:#64748B}.title{font-size:21px;font-weight:800;margin-top:3px}.sub{font-size:11px;color:#64748B}.profile{background:#1E293B;color:#CBD5E1;border:1px solid #334155;border-radius:9px;padding:8px;font-size:11px}.tabs{display:flex;gap:6px;overflow:auto;padding:9px;background:#080C14;border-bottom:1px solid #1E293B;position:sticky;top:76px;z-index:19}.tab,.nav{color:#64748B}.tab{flex:none;background:#0F172A;border:1px solid #1E293B;border-radius:8px;padding:8px 10px;font-size:11px}.active{color:#FB923C!important;border-color:#FB923C!important}.section{padding:14px}.card{background:#0F172A;border:1px solid #1E293B;border-radius:12px;padding:14px;margin-bottom:11px}.blue{border-color:#60A5FA55}.green{border-color:#4ADE8055}.orange{border-color:#FB923C55}.yellow{border-color:#FBBF2455}.label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}.o{color:#FB923C}.g{color:#4ADE80}.y{color:#FBBF24}.b{color:#60A5FA}.r{color:#F87171}.muted,.small{color:#64748B}.small{font-size:11px;line-height:1.55}.desc{font-size:13px;line-height:1.65;color:#94A3B8}.btn{width:100%;margin-top:9px;padding:10px;border-radius:9px;border:1px solid #334155;background:#1E293B;color:#CBD5E1;font-weight:650;font-size:12px}.primary{color:#FB923C;border-color:#FB923C66;background:#FB923C22}.good{color:#4ADE80;border-color:#4ADE8066;background:#4ADE8022}.input,.area{width:100%;padding:10px;background:#0A1628;border:1px solid #1E293B;border-radius:8px;color:#F1F5F9}.area{min-height:70px;resize:vertical}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.choice{background:#0A1628;border:2px solid transparent;border-radius:9px;padding:9px;text-align:center;color:#CBD5E1}.choice.selected{border-color:#FB923C}.emoji{font-size:24px}.choice small{display:block;font-size:10px;color:#94A3B8}.food,.session{background:#0A1628;border:1px solid #1E293B;border-radius:9px;padding:12px;margin-bottom:9px}.food h3,.session b{margin:0 0 5px;font-size:13px}.plan{font-size:11px;color:#64748B;line-height:1.5}.status{padding:10px;border-radius:8px;margin-top:8px;font-size:12px;line-height:1.5}.sg{background:#001A0A;color:#86EFAC;border:1px solid #4ADE8044}.sy{background:#1A1500;color:#FDE68A;border:1px solid #FBBF2444}.sr{background:#1A0000;color:#FCA5A5;border:1px solid #F8717144}.hidden{display:none!important}.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:#0F172A;border-top:1px solid #1E293B;display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:30}.nav{flex:1;text-align:center;font-size:9px}.nav div{font-size:18px}.log{font-size:12px;color:#CBD5E1;padding:8px 0;border-bottom:1px solid #1E293B}.log small{display:block;color:#475569}.modal{position:fixed;inset:0;background:#0009;z-index:100;display:flex;align-items:flex-end}.sheet{width:100%;max-width:520px;margin:auto;background:#0F172A;padding:18px;border-radius:16px 16px 0 0;max-height:90vh;overflow:auto}.user{display:flex;justify-content:space-between;align-items:center;background:#0A1628;border:1px solid #1E293B;border-radius:8px;padding:10px;margin:6px 0}.modal .btn{width:auto;margin-top:0}
+</style></head><body>
+<header class="header"><div class="top"><div><div class="eyebrow">PLAN PERSONAL · NIVEL 1</div><div class="title">Plan FC <span id="date" class="muted" style="font-size:12px"></span></div><div id="profile" class="sub"></div></div><button class="profile" onclick="users()">👤 <span id="name"></span></button></div></header>
+<nav class="tabs"><button class="tab active" data-t="hoy">📅 Hoy</button><button class="tab" data-t="estado">💬 Estado</button><button class="tab" data-t="comidas">🍽️ Comidas</button><button class="tab" data-t="plan">🚴 Plan</button><button class="tab" data-t="medidas">📏 Medidas</button></nav>
+<main>
+<section id="tab-hoy" class="section"><div id="decision" class="card blue"></div><div class="card orange"><div class="label o">Sesión de hoy</div><div id="session"></div><button class="btn primary" onclick="tab('estado')">💬 Actualizar estado</button><button id="done" class="btn good" onclick="done()">✓ Registrar sesión completada</button></div><div class="card green"><div class="label g">Comidas</div><div id="foodsum" class="small"></div><button class="btn good" onclick="tab('comidas')">+ Registrar comida</button></div><div class="card"><div class="label muted">Actividad</div><div id="log"></div></div></section>
+<section id="tab-estado" class="section hidden"><div class="card"><div class="label o">Energía</div><div id="energy" class="grid"><button class="choice" data-v="1">😴<small>Baja</small></button><button class="choice" data-v="2">😐<small>Regular</small></button><button class="choice" data-v="3">⚡<small>Alta</small></button></div></div><div class="card"><div class="label b">Sueño</div><div id="sleep" class="grid"><button class="choice" data-v="1">😫<small>Mal</small></button><button class="choice" data-v="2">😴<small>Regular</small></button><button class="choice" data-v="3">😊<small>Bien</small></button></div></div><div class="card"><div class="label r">Piernas / dolor</div><div id="legs" class="grid"><button class="choice" data-v="3">💪<small>Bien</small></button><button class="choice" data-v="2">😬<small>Cargadas</small></button><button class="choice" data-v="1">🤕<small>Muy cargadas</small></button></div></div><div class="card"><div class="label y">Datos</div><input id="hours" class="input" type="number" min="0" max="24" step=".1" placeholder="Horas de sueño"><textarea id="notes" class="area" style="margin-top:8px" placeholder="¿Cómo te sientes?"></textarea></div><button class="btn primary" onclick="saveState()">⚡ Guardar y recalcular</button><div id="result"></div></section>
+<section id="tab-comidas" class="section"><div class="card"><div class="label g">Registro local</div><div class="small">Se guarda por usuario y fecha. Nivel 1 no usa IA para interpretar el texto.</div></div><div id="foods"></div><div class="card"><input id="free" class="input" placeholder="Comida libre"><button class="btn good" onclick="freeFood()">Registrar</button></div></section>
+<section id="tab-plan" class="section hidden"><div class="card blue"><div class="label b">Plan base</div><div class="desc">El plan base no se modifica. El motor de reglas produce una versión ajustada de la sesión del día.</div></div><div id="plans"></div></section>
+<section id="tab-medidas" class="section hidden"><div class="card"><div class="label y">Nueva medición</div><input id="weight" class="input" type="number" step=".1" placeholder="Peso kg"><input id="belly" class="input" style="margin-top:7px" type="number" step=".1" placeholder="Barriga cm"><input id="waist" class="input" style="margin-top:7px" type="number" step=".1" placeholder="Cintura cm"><input id="chest" class="input" style="margin-top:7px" type="number" step=".1" placeholder="Pecho cm"><button class="btn primary" onclick="measure()">💾 Guardar</button></div><div class="card"><div class="label g">Historial</div><div id="history"></div></div></section>
+</main><div class="bottom"><div class="nav active" data-t="hoy"><div>📅</div>Hoy</div><div class="nav" data-t="estado"><div>💬</div>Estado</div><div class="nav" data-t="comidas"><div>🍽️</div>Comidas</div><div class="nav" data-t="plan"><div>🚴</div>Plan</div><div class="nav" data-t="medidas"><div>📏</div>Medidas</div></div>
+<div id="modal" class="modal hidden" onclick="if(event.target===this)closeUsers()"><div class="sheet"><div class="title">Perfiles locales</div><div class="small">Los datos se almacenan en este navegador/dispositivo.</div><div id="userslist"></div><hr style="border-color:#1E293B"><input id="newname" class="input" placeholder="Nombre"><input id="height" class="input" type="number" placeholder="Altura cm" style="margin-top:7px"><button class="btn primary" onclick="createUser()">+ Crear perfil</button><button class="btn" onclick="closeUsers()">Cerrar</button></div></div>
+<script>
+/* Plan FC — Nivel 1 · LocalStorage Schema v1 */
+const P='pf1_';
+const SCHEMA_KEY=P+'schema', USERS_KEY=P+'users', ACTIVE_KEY=P+'active_user';
+const PLAN=[
+  ['🏃 Run suave recuperación','45 min · suave'],
+  ['🏃 Run de calidad','50 min · calentamiento + 3×2 min controlados'],
+  ['🚴 Z2 recuperación','45 min opcional; si hay fatiga, descanso'],
+  ['🚴 Sweet spot 2×12','65 min · 194-205W · cadencia 88-92'],
+  ['🚴 Z2 base','55 min · 175-185W · cadencia 90-93'],
+  ['💤 Descanso','Movilidad 15 min'],
+  ['🏃 Run fin de semana','Sesión según semana del plan']
+];
+const FOOD=[
+  ['pre','Pre-entreno','Banano + maní + café; sesión intensa: huevos + arepa'],
+  ['post','Post-entreno','Yogur griego + fruta o huevos + fruta'],
+  ['lunch','Almuerzo','Verduras + proteína + arroz o papa + agua'],
+  ['snack','Snack','Maní + fruta o atún + galletas de arroz'],
+  ['dinner','Cena','Proteína + verduras; CHO según carga']
+];
+let pick={e:null,s:null,l:null};
+const now=()=>new Date();
+const today=()=>{const d=now();const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`};
+const iso=()=>now().toISOString();
+function read(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch{return d}}
+function write(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function usersList(){return read(USERS_KEY,[])}
+function activeId(){return localStorage.getItem(ACTIVE_KEY)}
+function currentUser(){return usersList().find(x=>x.id===activeId())||null}
+function userKey(id){return P+'user_'+id}
+function blankUser(u){return {
+  id:u.id,
+  profile:{name:u.name,heightCm:u.heightCm||null,birthDate:u.birthDate||null,createdAt:u.createdAt||iso()},
+  preferences:{units:'metric',language:'es-CO'},
+  baseline:{weightKg:null,ftpW:null,maxHeartRate:null,thresholdHeartRate:null},
+  plan:{planId:'plan-fc-2026-08',version:1,startDate:null,goal:null},
+  days:{},
+  measurements:[],
+  garmin:{connected:false,lastSyncAt:null,lastActivityAt:null,metrics:{}},
+  metadata:{updatedAt:iso()}
+}}
+function userData(){const u=currentUser();if(!u)return null;let d=read(userKey(u.id),null);if(!d){d=blankUser(u);write(userKey(u.id),d)}return d}
+function saveUserData(d){d.metadata=d.metadata||{};d.metadata.updatedAt=iso();write(userKey(d.id),d)}
+function ensureDay(d){const id=d.id,date=today();if(!d.days[date])d.days[date]={date,sleep:{},feeling:{},nutrition:{meals:[],waterMl:null},training:{planned:{},adjusted:null,completed:false,actual:null},measurements:null,garmin:{},decision:{},events:[]};return d.days[date]}
+function daily(){const d=userData();return d?ensureDay(d):null}
+function saveDay(d){saveUserData(d)}
+function event(type,description){const d=daily();if(!d)return;d.events=d.events||[];d.events.push({id:'evt_'+Date.now(),type,timestamp:iso(),description});saveDay(d)}
+function base(){return PLAN[now().getDay()]}
+function rules(day){
+  const r=[],e=day.feeling?.e,s=day.feeling?.s,l=day.feeling?.l,h=Number(day.sleep?.hours)||0;
+  if(h>0&&h<5)r.push('SUEÑO_MUY_BAJO');
+  if(e===1)r.push('ENERGIA_BAJA');
+  if(s===1)r.push('SUEÑO_MALO');
+  if(l===1)r.push('PIERNAS_MUY_CARGADAS');
+  const b=base();
+  if(r.length)return{status:'REDUCIDA',rules:r,title:'⬇️ '+b[0],desc:'30-40 min suave, sin intervalos. Si hay dolor relevante, no entrenar.'};
+  if(e===2||s===2||l===2)return{status:'MODERADA',rules:['ESTADO_REGULAR'],title:'↔️ '+b[0],desc:b[1]+' · reducir un bloque o mantener intensidad cómoda.'};
+  return{status:'NORMAL',rules:[],title:b[0],desc:b[1]};
+}
+function applyDecision(day){const x=rules(day);day.decision={status:x.status,ruleIds:x.rules,originalSession:{title:base()[0],description:base()[1]},adjustedSession:{title:x.title,description:x.desc},createdAt:iso()};return x}
+function render(){
+  const u=currentUser();if(!u)return;
+  const d=daily(),x=d.decision?.status?d.decision:applyDecision(d);saveDay(d);
+  name.textContent=u.name;profile.textContent=(u.heightCm?u.heightCm+' cm · ':'')+'Perfil local';date.textContent=now().toLocaleDateString('es-CO',{day:'numeric',month:'short'});
+  decision.innerHTML='<div class="label b">Motor de reglas · hoy</div><div style="font-size:13px">Estado: <b>'+esc(x.status)+'</b></div><div class="small">'+(x.rules?.length?'Reglas: '+x.rules.join(', '):'Sin reglas de reducción.')+'</div>';
+  session.innerHTML='<b>'+esc(x.title||x.adjustedSession?.title||base()[0])+'</b><div class="desc">'+esc(x.desc||x.adjustedSession?.description||base()[1])+'</div>';
+  const meals=(d.nutrition?.meals||[]);foodsum.textContent=meals.length+' registro(s) hoy.';
+  log.innerHTML=(d.events||[]).length?(d.events.slice().reverse().map(ev=>'<div class="log"><small>'+new Date(ev.timestamp).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})+'</small>'+esc(ev.description)+'</div>').join('')):'<div class="small">Sin registros hoy.</div>';
+  foods.innerHTML=FOOD.map(f=>{
+    const v=meals.find(m=>m.type===f[0]);
+    return '<div class="food"><h3>'+f[1]+'</h3><div class="plan">Propuesto: '+f[2]+'</div>'+(v?'<div class="status sg">✅ '+esc(v.actual)+'</div><button class="btn" onclick="delFood(\''+f[0]+'\')">Editar</button>':'<textarea id="f_'+f[0]+'" class="area" style="margin-top:8px" placeholder="¿Qué comiste?"></textarea><button class="btn good" onclick="food(\''+f[0]+'\')">Registrar</button>')+'</div>'
+  }).join('');
+  plans.innerHTML=PLAN.map(x=>'<div class="session"><b>'+x[0]+'</b><div class="small">'+x[1]+'</div></div>').join('');
+  const h=uDataMeasurements();history.innerHTML=h.length?h.slice().reverse().map(x=>'<div class="log"><small>'+x.date+'</small>'+[x.weightKg&&x.weightKg+' kg',x.bellyCm&&x.bellyCm+' cm barriga',x.waistCm&&x.waistCm+' cm cintura',x.chestCm&&x.chestCm+' cm pecho'].filter(Boolean).join(' · ')+'</div>').join(''):'<div class="small">Sin mediciones.</div>';
+  done.textContent=d.training?.completed?'✓ Sesión registrada':'✓ Registrar sesión completada';
+  hydrateStateForm(d);
+}
+function hydrateStateForm(d){
+  pick={e:d.feeling?.e||null,s:d.feeling?.s||null,l:d.feeling?.l||null};
+  ['energy','sleep','legs'].forEach(box=>document.querySelectorAll('#'+box+' .choice').forEach(b=>b.classList.toggle('selected',+b.dataset.v===(box==='energy'?pick.e:box==='sleep'?pick.s:pick.l))));
+  hours.value=d.sleep?.hours||'';notes.value=d.feeling?.notes||'';
+}
+function uDataMeasurements(){return userData()?.measurements||[]}
+function saveState(){
+  if(!pick.e||!pick.s||!pick.l){alert('Completa energía, sueño y piernas.');return}
+  const d=daily();d.feeling={e:pick.e,s:pick.s,l:pick.l,notes:notes.value.trim()};d.sleep={...(d.sleep||{}),hours:Number(hours.value)||null,source:'manual'};const x=applyDecision(d);saveDay(d);event('feeling_logged','💬 Estado actualizado · '+x.status);result.innerHTML='<div class="status '+(x.status==='NORMAL'?'sg':x.status==='MODERADA'?'sy':'sr')+'">Guardado. Sesión: <b>'+x.status+'</b>.</div>';render()
+}
+function food(id){const v=document.getElementById('f_'+id)?.value.trim();if(!v)return;const d=daily();d.nutrition=d.nutrition||{meals:[],waterMl:null};d.nutrition.meals=(d.nutrition.meals||[]).filter(m=>m.type!==id);d.nutrition.meals.push({id:'meal_'+Date.now(),type:id,planned:FOOD.find(f=>f[0]===id)?.[2]||'',actual:v,time:now().toTimeString().slice(0,5),notes:'',source:'manual',createdAt:iso()});saveDay(d);event('food_logged','🍽️ '+id+': '+v);render()}
+function delFood(id){const d=daily();d.nutrition.meals=(d.nutrition.meals||[]).filter(m=>m.type!==id);saveDay(d);event('food_edited','✏️ Registro de comida editado');render()}
+function freeFood(){const v=free.value.trim();if(!v)return;const d=daily();d.nutrition=d.nutrition||{meals:[],waterMl:null};d.nutrition.meals.push({id:'meal_'+Date.now(),type:'free',planned:'',actual:v,time:now().toTimeString().slice(0,5),notes:'',source:'manual',createdAt:iso()});saveDay(d);event('food_logged','🍽️ comida libre: '+v);free.value='';render()}
+function done(){const d=daily();d.training.completed=true;d.training.completedAt=iso();saveDay(d);event('training_completed','✅ Sesión completada');render()}
+function measure(){const x={id:'m_'+Date.now(),date:today(),weightKg:+weight.value||null,bellyCm:+belly.value||null,waistCm:+waist.value||null,chestCm:+chest.value||null,source:'manual'};if(!x.weightKg&&!x.bellyCm&&!x.waistCm&&!x.chestCm){alert('Ingresa un valor.');return}const d=userData();d.measurements=d.measurements||[];d.measurements.push(x);d.days[today()]=d.days[today()]||ensureDay(d);d.days[today()].measurements=x;saveUserData(d);event('measurement_logged','📏 Medición registrada');render()}
+function users(){userslist.innerHTML=usersList().map(u=>'<div class="user"><span>👤 '+esc(u.name)+'</span><button class="btn" onclick="switchUser(\''+u.id+'\')">'+(u.id===activeId()?'Activo':'Usar')+'</button></div>').join('');modal.classList.remove('hidden')}
+function closeUsers(){modal.classList.add('hidden')}
+function switchUser(id){if(!usersList().some(u=>u.id===id))return;localStorage.setItem(ACTIVE_KEY,id);pick={e:null,s:null,l:null};closeUsers();render()}
+function createUser(){const n=newname.value.trim();if(!n)return;const a=usersList();const u={id:'u_'+Date.now(),name:n,heightCm:+height.value||null,createdAt:iso(),lastActiveAt:iso()};a.push(u);write(USERS_KEY,a);const d=blankUser(u);write(userKey(u.id),d);localStorage.setItem(ACTIVE_KEY,u.id);newname.value='';height.value='';users();render()}
+function tab(id){document.querySelectorAll('main section').forEach(x=>x.classList.add('hidden'));document.getElementById('tab-'+id).classList.remove('hidden');document.querySelectorAll('.tab,.nav').forEach(x=>x.classList.toggle('active',x.dataset.t===id))}
+document.querySelectorAll('.tab,.nav').forEach(x=>x.onclick=()=>tab(x.dataset.t));
+document.querySelectorAll('.choice').forEach(x=>x.onclick=()=>{const box=x.parentElement.id,k=box==='energy'?'e':box==='sleep'?'s':'l';pick[k]=+x.dataset.v;document.querySelectorAll('#'+box+' .choice').forEach(y=>y.classList.remove('selected'));x.classList.add('selected')});
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function migrateOldData(){
+  const version=read(SCHEMA_KEY,null);
+  if(version?.version===1)return;
+  const oldUsers=read(P+'users',[]);
+  if(oldUsers.length){
+    oldUsers.forEach(u=>{if(!localStorage.getItem(userKey(u.id)))write(userKey(u.id),blankUser(u));
+      const prefix=P+'day_'+u.id+'_';
+      for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k||!k.startsWith(prefix))continue;const day=read(k,null);if(!day)continue;const d=read(userKey(u.id),blankUser(u));d.days[day.date||k.slice(prefix.length)]=normalizeOldDay(day);write(userKey(u.id),d)}
+      const oldM=read(P+'measure_'+u.id,[]);if(oldM.length){const d=read(userKey(u.id),blankUser(u));d.measurements=oldM.map(x=>({id:'m_'+(x.date||Date.now()),date:x.date,weightKg:x.w||null,bellyCm:x.b||null,waistCm:x.wa||null,chestCm:x.c||null,source:'migrated'}));write(userKey(u.id),d)}
+    });
+  }
+  write(SCHEMA_KEY,{version:1,app:'Plan FC',updatedAt:iso()});
+}
+function normalizeOldDay(x){return {date:x.date,sleep:x.sleep||{},feeling:x.feeling||{},nutrition:{meals:Object.entries(x.nutrition||{}).map(([type,actual])=>({id:'meal_'+Date.now()+Math.random(),type,planned:'',actual,time:null,notes:'',source:'migrated',createdAt:iso()})),waterMl:null},training:{planned:x.training||{},adjusted:null,completed:!!x.training?.completed,actual:null},measurements:x.measurements||null,garmin:{},decision:x.decisions||{},events:(x.log||[]).map((e,i)=>({id:'evt_m_'+i,type:'migrated',timestamp:iso(),description:e.text||''}))}}
+(function init(){
+  migrateOldData();
+  let a=usersList();
+  if(!a.length){const u={id:'u_'+Date.now(),name:'Felipe',heightCm:175,createdAt:iso(),lastActiveAt:iso()};a=[u];write(USERS_KEY,a);write(userKey(u.id),blankUser(u));localStorage.setItem(ACTIVE_KEY,u.id)}
+  if(!activeId()||!currentUser())localStorage.setItem(ACTIVE_KEY,a[0].id);
+  const u=currentUser();if(u){u.lastActiveAt=iso();write(USERS_KEY,a)}
+  render();
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+})();
+</script></body></html>
