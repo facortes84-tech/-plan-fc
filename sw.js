@@ -1,4 +1,4 @@
-const CACHE_NAME = 'plan-fc-v7';
+const CACHE_NAME = 'plan-fc-v5';
 const ASSETS = ['./index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', function(event) {
